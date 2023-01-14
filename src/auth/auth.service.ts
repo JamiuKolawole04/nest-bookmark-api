@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import * as argon from 'argon2';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
@@ -23,16 +24,25 @@ export class AuthService {
     //   },
     // });
 
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        hash,
-      },
-    });
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          hash,
+        },
+      });
+
+      delete user.hash;
+      return user;
+    } catch (err) {
+      if (err instanceof PrismaClientKnownRequestError) {
+        if (err.code === 'P2002' && err.meta.target === 'users_email_key') {
+          throw new ForbiddenException('email already exists');
+        }
+      }
+      throw err;
+    }
 
     // save new user to db
-
-    delete user.hash;
-    return user;
   }
 }

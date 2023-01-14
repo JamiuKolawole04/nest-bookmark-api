@@ -21,7 +21,7 @@ model User {
   createdAT DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("users)
+  @@map("users")
   
 }
 
@@ -33,8 +33,8 @@ model Bookmark {
   createdAT DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId Int
+  userId String
   user User @relation(fields: [userId], references: [id])
 
-  @@map("bookmarks)
+  @@map("bookmarks")
 }

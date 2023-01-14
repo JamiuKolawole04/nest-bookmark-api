@@ -19,6 +19,8 @@ model User {
 
   createdAT DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users)
   
 }
 
@@ -29,4 +31,9 @@ model Bookmark {
   link String
   createdAT DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("bookmarks)
 }

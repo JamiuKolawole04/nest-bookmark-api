@@ -61,6 +61,7 @@ export class AuthService {
     if (!comparePassword) throw new ForbiddenException('credentials incorrect');
     // send back user
 
+    delete user.hash;
     return user;
   }
 }

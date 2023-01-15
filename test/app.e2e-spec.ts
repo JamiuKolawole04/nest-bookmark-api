@@ -25,17 +25,27 @@
 
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as pactum from 'pactum';
 
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
+import { AuthDto } from '../src/auth/dto';
+import { PrismaModule } from '../src/prisma/prisma.module';
 
 describe('App e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        AppModule,
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        PrismaModule,
+      ],
+      providers: [ConfigService, PrismaService],
     }).compile();
 
     app = moduleRef.createNestApplication();
@@ -50,6 +60,7 @@ describe('App e2e', () => {
 
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
+    pactum.request.setBaseUrl('http://localhost:4001');
   });
 
   afterAll(() => {
@@ -57,12 +68,48 @@ describe('App e2e', () => {
   });
 
   describe('Auth', () => {
+    const dto: AuthDto = {
+      email: 'jakko4real@gmail.com',
+      password: '1234567890',
+    };
+
     describe('Signup', () => {
-      it.todo('should sign up');
+      it('should throw exception if email is empty', () => {
+        return pactum
+          .spec()
+          .post('/api/v1/auth/signup')
+          .withBody({
+            password: dto.password,
+          })
+          .expectStatus(400);
+      });
+
+      it('should throw exception if password is empty', () => {
+        return pactum
+          .spec()
+          .post('/api/v1/auth/signup')
+          .withBody({
+            email: dto.email,
+          })
+          .expectStatus(400);
+      });
+      it('should sign up', () => {
+        return pactum
+          .spec()
+          .post('/api/v1/auth/signup')
+          .withBody(dto)
+          .expectStatus(201);
+      });
     });
 
     describe('Signin', () => {
-      it.todo('should sign in');
+      it('should sign in', () => {
+        return pactum
+          .spec()
+          .post('/api/v1/auth/signin')
+          .withBody(dto)
+          .expectStatus(200);
+      });
     });
   });
 

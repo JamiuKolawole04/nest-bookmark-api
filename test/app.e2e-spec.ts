@@ -32,6 +32,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaModule } from '../src/prisma/prisma.module';
+import { EditUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -155,7 +156,26 @@ describe('App e2e', () => {
       });
     });
 
-    describe('Edit user', () => {});
+    describe('Edit user', () => {
+      const dto: EditUserDto = {
+        firstName: 'Vladimir',
+        email: 'jay@gmail.com',
+      };
+      describe('Get me', () => {
+        it('should edit user', () => {
+          return pactum
+            .spec()
+            .patch('/api/v1/user')
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
+            .withBody(dto)
+            .expectStatus(200)
+            .expectBodyContains(dto.firstName)
+            .expectBodyContains(dto.email);
+        });
+      });
+    });
   });
 
   describe('Bookmarks', () => {

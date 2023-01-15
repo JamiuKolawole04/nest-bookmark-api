@@ -33,6 +33,7 @@ import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { EditUserDto } from '../src/user/dto';
+import { createBookmarkDto } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -151,8 +152,7 @@ describe('App e2e', () => {
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
-          .expectStatus(200)
-          .inspect();
+          .expectStatus(200);
       });
     });
 
@@ -179,9 +179,48 @@ describe('App e2e', () => {
   });
 
   describe('Bookmarks', () => {
-    describe('Create bookmark', () => {});
+    describe('Get empty bookmarks', () => {
+      it('should get  bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/api/v1/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBody([]);
+      });
+    });
 
-    describe('Get bookmarks', () => {});
+    describe('Create bookmark', () => {
+      const dto: createBookmarkDto = {
+        title: 'React Moonflix tutoorial Part2',
+        link: 'https://www.youtube.com/watch?v=Q_uLi4f27Lc',
+        description: 'React moonflix app part2',
+      };
+      it('should create a bookmark', () => {
+        return pactum
+          .spec()
+          .post('/api/v1/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(201);
+      });
+    });
+
+    describe('Get bookmarks', () => {
+      it('should get  bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/api/v1/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
 
     describe('Get bookmark by id', () => {});
 

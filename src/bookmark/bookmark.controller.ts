@@ -16,7 +16,7 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { createBookmarkDto, EditBookmarkDto } from './dto';
 
 @UseGuards(JwtGuard)
-@Controller('api/v1/bookmark')
+@Controller('api/v1/bookmarks')
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
   @Post()
@@ -40,15 +40,16 @@ export class BookmarkController {
     return this.bookmarkService.getBookmarkById(userId, bookmarkId);
   }
 
-  @Patch()
+  @Patch(':id')
   editBookmarkById(
     @GetUser('id') userId: string,
+    @Param('id', ParseUUIDPipe) bookmarkId: string,
     @Body() dto: EditBookmarkDto,
   ) {
-    return this.bookmarkService.editBookmarkById(userId, dto);
+    return this.bookmarkService.editBookmarkById(userId, bookmarkId, dto);
   }
 
-  @Delete()
+  @Delete(':id')
   deleteBookmarkById(
     @GetUser('id') userId: string,
     @Param('id', ParseUUIDPipe) bookmarkId: string,

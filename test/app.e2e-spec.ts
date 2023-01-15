@@ -25,6 +25,8 @@
 
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import * as pactum from 'pactum';
+
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 
@@ -44,8 +46,9 @@ describe('App e2e', () => {
     );
 
     await app.init();
-    prisma = app.get(PrismaService);
+    await app.listen(4001);
 
+    prisma = app.get(PrismaService);
     await prisma.cleanDb();
   });
 
@@ -58,7 +61,9 @@ describe('App e2e', () => {
       it.todo('should sign up');
     });
 
-    describe('Signin', () => {});
+    describe('Signin', () => {
+      it.todo('should sign in');
+    });
   });
 
   describe('User', () => {

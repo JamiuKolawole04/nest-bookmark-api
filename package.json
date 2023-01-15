@@ -21,7 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:e2e:watch": "dotenv -e .env.test jest --watch --no-cache --config ./test/jest-e2e.json",
     "db:migrate": "npx prisma migrate dev --name init",
-    "db:migrate:test": "npx dotenv -e .env.test -- prisma migrate dev --name init"
+    "db:studio": "npx prisma studio",
+    "db:migrate:test": "npx dotenv -e .env.test -- prisma migrate dev --name init",
+    "db:studio:test": "npx dotenv -e .env.test -- prisma studio"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

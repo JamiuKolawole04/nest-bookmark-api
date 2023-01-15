@@ -2,13 +2,14 @@ import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 
 export class EditBookmarkDto {
   @IsString()
-  @Length(6, 40)
+  @Length(6, 200)
   @IsNotEmpty()
   @IsOptional()
   title?: string;
 
   @IsString()
   @IsOptional()
+  @Length(6, 200)
   description?: string;
 
   @IsString()

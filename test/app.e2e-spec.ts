@@ -33,7 +33,7 @@ import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { EditUserDto } from '../src/user/dto';
-import { createBookmarkDto } from 'src/bookmark/dto';
+import { createBookmarkDto, EditBookmarkDto } from '../src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -228,7 +228,7 @@ describe('App e2e', () => {
     });
 
     describe('Get bookmark by id', () => {
-      it('should get a bookmark by id', () => {
+      it('should get bookmark', () => {
         return pactum
           .spec()
           .get('/api/v1/bookmarks/{id}')
@@ -237,12 +237,52 @@ describe('App e2e', () => {
           })
           .withPathParams('id', '$S{bookmarkId}')
           .expectStatus(200)
-          .inspect();
+          .expectBodyContains('$S{bookmarkId}');
       });
     });
 
-    describe('Edit bookmark by id', () => {});
+    describe('Edit bookmark by id', () => {
+      const dto: EditBookmarkDto = {
+        description:
+          'Part 2 | Full Stack Responsive React Movies App With API | MERN Project | React ',
+      };
+      it('should edit bookmark', () => {
+        return pactum
+          .spec()
+          .patch('/api/v1/bookmarks/{id}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withPathParams('id', '$S{bookmarkId}')
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains('$S{bookmarkId}')
+          .expectBodyContains(dto.description);
+      });
+    });
 
-    describe('Delete bookmark by id', () => {});
+    describe('Delete bookmark by id', () => {
+      it('should delete bookmark', () => {
+        return pactum
+          .spec()
+          .delete('/api/v1/bookmarks/{id}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withPathParams('id', '$S{bookmarkId}')
+          .expectStatus(204);
+      });
+
+      it('should get empty bookmark', () => {
+        return pactum
+          .spec()
+          .get('/api/v1/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(0);
+      });
+    });
   });
 });

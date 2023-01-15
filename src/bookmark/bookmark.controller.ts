@@ -52,5 +52,7 @@ export class BookmarkController {
   deleteBookmarkById(
     @GetUser('id') userId: string,
     @Param('id', ParseUUIDPipe) bookmarkId: string,
-  ) {}
+  ) {
+    return this.bookmarkService.deleteBookmarkById(userId, bookmarkId);
+  }
 }
